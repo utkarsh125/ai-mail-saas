@@ -5,5 +5,6 @@ await db.user.create({
         emailAddress: 'test@gmail.com',
         firstName: 'utkarsh',
         lastName: 'pandey'
-    }
+  }
 })
+
