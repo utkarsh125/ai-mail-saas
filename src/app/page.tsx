@@ -1,6 +1,5 @@
-export default async function Home() {
+import LinkAccountButton from "~/components/link-account-button";
 
-  return (
-    <h1>Hello World.</h1>
-  );
+export default async function Home() {
+  return <LinkAccountButton />;
 }
