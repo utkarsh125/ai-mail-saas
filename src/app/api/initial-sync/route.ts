@@ -23,7 +23,8 @@ export const POST = async(req: NextRequest) => {
         }
 
         console.log("Starting initial sync...");
-        const account = new Account(dbAccount.accessToken);
+        // const account = new Account(dbAccount.accessToken);
+        const account = new Account(dbAccount.token);
         const response = await account.performInitialSync();
 
         if(!response){

@@ -55,21 +55,71 @@ export const GET = async (req: NextRequest) => {
   const accountDetails = await getAccountDetails(token.accessToken);
   //   console.log(accountDetails)
 
-  await db.account.upsert({
-    where: {
+  // await db.account.upsert({
+  //   where: {
+  //     id: token.accountId.toString(),
+  //   },
+  //   update: {
+  //     accessToken: { set: token.accessToken }, // Use `set()` to update unique fields
+  //   },
+  //   create: {
+  //     id: token.accountId.toString(),
+  //     userId,
+  //     emailAddress: accountDetails.email,
+  //     name: accountDetails.name,
+  //     accessToken: token.accessToken,
+  //   },
+  // });
+  
+//   await db.account.upsert({
+//     where: { id: token.accountId.toString() },
+//     create: {
+//         id: token.accountId.toString(),
+//         userId,
+//         token: token.accessToken,
+//         provider: 'Aurinko',
+//         emailAddress: accountDetails.email,
+//         name: accountDetails.name
+//     },
+//     update: {
+//         token: token.accessToken,
+//     }
+// })
+
+  
+const existingUser = await db.user.findUnique({
+  where: { id: userId },
+});
+
+if (!existingUser) {
+  console.log(`User with ID ${userId} does not exist. Creating a new user...`);
+
+  await db.user.create({
+      data: {
+          id: userId,
+          emailAddress: accountDetails.email,
+          firstName: accountDetails.name.split(" ")[0] ?? "Unknown",
+          lastName: accountDetails.name.split(" ").slice(1).join(" ") ?? "Unknown",
+      },
+  });
+}
+
+//Now that user exists, we can safely create or update the account
+await db.account.upsert({
+  where: { id: token.accountId.toString() },
+  create: {
       id: token.accountId.toString(),
-    },
-    update: {
-      accessToken: token.accessToken,
-    },
-    create: {
-      id: token.accountId.toString(),
-      userId,
+      userId, // Ensuring this exists in User table
+      token: token.accessToken,
+      provider: "Aurinko",
       emailAddress: accountDetails.email,
       name: accountDetails.name,
-      accessToken: token.accessToken,
-    },
-  });
+  },
+  update: {
+      token: token.accessToken,
+  },
+});
+
 
   //trigger initial-sync endpoint
   waitUntil(
