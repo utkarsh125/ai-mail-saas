@@ -53,7 +53,7 @@ export const GET = async (req: NextRequest) => {
   }
 
   const accountDetails = await getAccountDetails(token.accessToken);
-  //   console.log(accountDetails)
+    console.log(accountDetails)
 
   // await db.account.upsert({
   //   where: {

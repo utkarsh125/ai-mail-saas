@@ -1,79 +1,84 @@
 import { EmailAddress, EmailAttachment, EmailMessage } from "./types";
 
 import { db } from "~/server/db";
-import pLimit from 'p-limit';
 
-export async function syncEmailsToDatabase(emails: EmailMessage[], accountId: string){
+export async function syncEmailsToDatabase(emails: EmailMessage[], accountId: string) {
+    console.log('Attempting to sync emails to database. Count:', emails.length);
 
-    console.log('Attempting to sync emails database', emails.length);
-
-    const limit = pLimit(10);
-
-    try {
-        // Promise.all(emails.map((email, index) => upsertEmail(email, accountId, index)))
-        for(const email of emails){
-            await upsertEmail(email, accountId, 0)
-        }
-    } catch (error) {
-        console.log('Error while fetching emails: ',error);
+    if (!emails.length) {
+        console.log('No emails to sync.');
+        return;
     }
 
+    try {
+        await Promise.all(emails.map((email, index) => upsertEmail(email, accountId, index)));
+
+        // Verify stored emails
+        const storedEmails = await db.email.findMany({});
+        console.log('Final stored email count:', storedEmails.length);
+    } catch (error) {
+        console.error('Error while syncing emails:', error);
+    }
 }
 
+// Upserting email
+async function upsertEmail(email: EmailMessage, accountId: string, index: number) {
+    console.log(`Upserting email ${index} | ID: ${email.id}`);
 
-async function upsertEmail(email: EmailMessage, accountId: string, index: number){
-    console.log(`Upserting email ${index}`);
     try {
-        let emailLabelType: 'inbox' | 'sent' | 'draft' = 'inbox'
-        if(email.sysLabels.includes('inbox') || email.sysLabels.includes('important')){
+        if (!email.id) {
+            console.error(`Skipping email due to missing ID.`);
+            return;
+        }
+
+        if (!email.threadId) {
+            console.warn(`Missing threadId for email ${email.id}, generating a default one.`);
+            email.threadId = `thread_${email.id}`;
+        }
+
+        if (!email.from || !email.from.address) {
+            console.error(`Email ${email.id} has no sender address`);
+            return;
+        }
+
+        let emailLabelType: 'inbox' | 'sent' | 'draft' = 'inbox';
+        if (email.sysLabels.includes('inbox') || email.sysLabels.includes('important')) {
             emailLabelType = 'inbox';
-        } else if(email.sysLabels.includes('sent')){
+        } else if (email.sysLabels.includes('sent')) {
             emailLabelType = 'sent';
-        } else if(email.sysLabels.includes('draft')){
+        } else if (email.sysLabels.includes('draft')) {
             emailLabelType = 'draft';
         }
 
-        const addressesToUpsert = new Map()
-        for(const address of [email.from, ...email.to, ...email.cc, ...email.bcc, ...email.replyTo]){
+        // Upserting all email addresses
+        const addressesToUpsert = new Map();
+        [email.from, ...email.to, ...email.cc, ...email.bcc, ...email.replyTo].forEach(address => {
             addressesToUpsert.set(address.address, address);
-        }
+        });
 
-        const upsertedAddresses: (Awaited<ReturnType<typeof upsertEmailAddress>> | null)[] = [];
-
-        for(const address of addressesToUpsert.values()){
-            const upsertedAddress = await upsertEmailAddress(address, accountId);
-            upsertedAddresses.push(upsertedAddress);
-        }
+        const upsertedAddresses = await Promise.all([...addressesToUpsert.values()]
+            .map(address => upsertEmailAddress(address, accountId)));
 
         const addressMap = new Map(
             upsertedAddresses.filter(Boolean).map(address => [address!.address, address])
-        )
+        );
 
-        const fromAddress = addressMap.get(email.from.address)
-        console.log(fromAddress);
-        if(!fromAddress){
-            console.log(`Failed to upsert from address for email ${email.bodySnippet}`)
+        const fromAddress = addressMap.get(email.from.address);
+        if (!fromAddress) {
+            console.error(`Failed to upsert sender address for email ${email.id}`);
+            return;
         }
 
-        const toAddresses = email.to.map(addr => addressMap.get(addr.address)).filter(Boolean);
-        const ccAddresses = email.cc.map(addr => addressMap.get(addr.address)).filter(Boolean);
-        const bccAddresses = email.bcc.map(addr => addressMap.get(addr.address)).filter(Boolean);
-        const replyToAddresses = email.replyTo.map(addr => addressMap.get(addr.address)).filter(Boolean);
+        console.log(`Upserting thread with ID: ${email.threadId}`);
 
-        // 2. Upsert Thread
+        // Upsert Thread
         const thread = await db.thread.upsert({
             where: { id: email.threadId },
             update: {
                 subject: email.subject,
                 accountId,
                 lastMessageDate: new Date(email.sentAt),
-                done: false,
-                participantIds: [...new Set([
-                    fromAddress?.id ?? '',
-                    ...toAddresses.map(a => a!.id),
-                    ...ccAddresses.map(a => a!.id),
-                    ...bccAddresses.map(a => a!.id)
-                ])]
+                done: false
             },
             create: {
                 id: email.threadId,
@@ -83,17 +88,17 @@ async function upsertEmail(email: EmailMessage, accountId: string, index: number
                 draftStatus: emailLabelType === 'draft',
                 inboxStatus: emailLabelType === 'inbox',
                 sentStatus: emailLabelType === 'sent',
-                lastMessageDate: new Date(email.sentAt),
-                participantIds: [...new Set([
-                    fromAddress?.id ?? '',
-                    ...toAddresses.map(a => a!.id),
-                    ...ccAddresses.map(a => a!.id),
-                    ...bccAddresses.map(a => a!.id)
-                ])]
+                lastMessageDate: new Date(email.sentAt)
             }
         });
 
-        // 3. Upsert Email
+        console.log(`Upserted thread ID: ${thread.id}`);
+
+        // Ensure only valid email addresses are included in `connect`
+        const filterValidAddresses = (addresses: EmailAddress[]) =>
+            addresses.map(a => addressMap.get(a.address)).filter(Boolean).map(a => ({ id: a!.id }));
+
+        // Upsert Email
         await db.email.upsert({
             where: { id: email.id },
             update: {
@@ -105,25 +110,14 @@ async function upsertEmail(email: EmailMessage, accountId: string, index: number
                 internetMessageId: email.internetMessageId,
                 subject: email.subject,
                 sysLabels: email.sysLabels,
-                keywords: email.keywords,
-                sysClassifications: email.sysClassifications,
-                sensitivity: email.sensitivity,
-                meetingMessageMethod: email.meetingMessageMethod,
-                fromId: fromAddress?.id ?? '',
-                to: { set: toAddresses.map(a => ({ id: a!.id })) },
-                cc: { set: ccAddresses.map(a => ({ id: a!.id })) },
-                bcc: { set: bccAddresses.map(a => ({ id: a!.id })) },
-                replyTo: { set: replyToAddresses.map(a => ({ id: a!.id })) },
+                fromId: fromAddress.id,
+                to: { set: filterValidAddresses(email.to) },
+                cc: { set: filterValidAddresses(email.cc) },
+                bcc: { set: filterValidAddresses(email.bcc) },
+                replyTo: { set: filterValidAddresses(email.replyTo) },
                 hasAttachments: email.hasAttachments,
-                internetHeaders: email.internetHeaders as any,
                 body: email.body,
                 bodySnippet: email.bodySnippet,
-                inReplyTo: email.inReplyTo,
-                references: email.references,
-                threadIndex: email.threadIndex,
-                nativeProperties: email.nativeProperties as any,
-                folderId: email.folderId,
-                omitted: email.omitted,
                 emailLabel: emailLabelType,
             },
             create: {
@@ -137,110 +131,38 @@ async function upsertEmail(email: EmailMessage, accountId: string, index: number
                 internetMessageId: email.internetMessageId,
                 subject: email.subject,
                 sysLabels: email.sysLabels,
-                internetHeaders: email.internetHeaders as any,
-                keywords: email.keywords,
-                sysClassifications: email.sysClassifications,
-                sensitivity: email.sensitivity,
-                meetingMessageMethod: email.meetingMessageMethod,
-                fromId: fromAddress?.id ?? '',
-                to: { connect: toAddresses.map(a => ({ id: a!.id })) },
-                cc: { connect: ccAddresses.map(a => ({ id: a!.id })) },
-                bcc: { connect: bccAddresses.map(a => ({ id: a!.id })) },
-                replyTo: { connect: replyToAddresses.map(a => ({ id: a!.id })) },
+                fromId: fromAddress.id,
+                to: { connect: filterValidAddresses(email.to) },
+                cc: { connect: filterValidAddresses(email.cc) },
+                bcc: { connect: filterValidAddresses(email.bcc) },
+                replyTo: { connect: filterValidAddresses(email.replyTo) },
                 hasAttachments: email.hasAttachments,
                 body: email.body,
                 bodySnippet: email.bodySnippet,
-                inReplyTo: email.inReplyTo,
-                references: email.references,
-                threadIndex: email.threadIndex,
-                nativeProperties: email.nativeProperties as any,
-                folderId: email.folderId,
-                omitted: email.omitted,
             }
         });
 
-        const threadEmails = await db.email.findMany({
-            where: { threadId: thread.id},
-            orderBy: {receivedAt: 'asc'}
-        });
-
-        let threadFolderType = 'sent';
-
-        for(const threadEmail of threadEmails){
-            if(threadEmail.emailLabel === 'inbox'){
-                threadFolderType = 'inbox';
-                break; //if any email is in the inbox, the whole thread is in inbox
-            }
-            else if (threadEmail.emailLabel === 'draft'){
-                threadFolderType = 'draft'; //Set to draft, but continue checking for inbox
-            }
-        }
-
-        await db.thread.update({
-            where: { id: thread.id },
-            data: {
-                draftStatus: threadFolderType === 'draft',
-                inboxStatus: threadFolderType === 'inbox',
-                sentStatus: threadFolderType === 'sent'
-            }
-        });
+        console.log(`Email ${email.id} stored successfully`);
 
     } catch (error) {
-        
+        console.error(`Error in upserting email ${email.id}:`, error);
     }
 }
 
-
-async function upsertEmailAddress(address: EmailAddress, accountId: string){
-    try{
-        const existingAddress = await db.emailAddress.findUnique({
-            where: { accountId_address: { accountId: accountId, address: address.address ?? "" } },
-        });
-
-        if (existingAddress) {
-            return await db.emailAddress.update({
-                where: { id: existingAddress.id },
-                data: { name: address.name, raw: address.raw },
-            });
-        } else {
-            return await db.emailAddress.create({
-                data: { address: address.address ?? "", name: address.name, raw: address.raw, accountId },
-            });
-        }
-    }catch(error){
-        console.log('Failed to upsert email address: ', error);
-        return null
-    }
-}
-
-async function upsertAttachment(emailId: string, attachment: EmailAttachment) {
+async function upsertEmailAddress(address: EmailAddress, accountId: string) {
     try {
-        await db.emailAttachment.upsert({
-            where: { id: attachment.id ?? "" },
-            update: {
-                name: attachment.name,
-                mimeType: attachment.mimeType,
-                size: attachment.size,
-                inline: attachment.inline,
-                contentId: attachment.contentId,
-                content: attachment.content,
-                contentLocation: attachment.contentLocation,
-            },
-            create: {
-                id: attachment.id,
-                emailId,
-                name: attachment.name,
-                mimeType: attachment.mimeType,
-                size: attachment.size,
-                inline: attachment.inline,
-                contentId: attachment.contentId,
-                content: attachment.content,
-                contentLocation: attachment.contentLocation,
-            },
+        if (!address.address) {
+            console.error("Skipping email address upsert due to missing address.");
+            return null;
+        }
+
+        return await db.emailAddress.upsert({
+            where: { accountId_address: { accountId, address: address.address } },
+            update: { name: address.name, raw: address.raw },
+            create: { accountId, address: address.address, name: address.name, raw: address.raw }
         });
     } catch (error) {
-        console.log(`Failed to upsert attachment for email ${emailId}: ${error}`);
+        console.error('Failed to upsert email address:', error);
+        return null;
     }
 }
-
-// export { syncEmailsToDatabase };

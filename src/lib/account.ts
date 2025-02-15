@@ -153,5 +153,56 @@ export class Account{
             return null;
         }
     }
+
+    // async performInitialSync() {
+    //     try {
+    //         console.log("🟡 Starting sync process...");
+    
+    //         let syncResponse = await this.startSync();
+    //         console.log("🟢 Initial sync response:", syncResponse);
+    
+    //         while (!syncResponse.ready) {
+    //             console.log("🔄 Sync not ready, retrying in 1s...");
+    //             await new Promise(resolve => setTimeout(resolve, 1000));
+    //             syncResponse = await this.startSync();
+    //             console.log("🔄 Sync response after retry:", syncResponse);
+    //         }
+    
+    //         let storedDeltaToken: string = syncResponse.syncUpdatedToken;
+    //         console.log("🟢 Stored delta token:", storedDeltaToken);
+    
+    //         let updatedResponse = await this.getUpdatedEmails({ deltaToken: storedDeltaToken });
+    //         console.log("🟢 Updated response:", updatedResponse);
+    
+    //         if (updatedResponse.nextDeltaToken) {
+    //             storedDeltaToken = updatedResponse.nextDeltaToken;
+    //         }
+    
+    //         let allEmails: EmailMessage[] = updatedResponse.records;
+    //         console.log("📩 Fetched emails count:", allEmails.length);
+    
+    //         while (updatedResponse.nextPageToken) {
+    //             console.log("🔄 Fetching next page...");
+    //             updatedResponse = await this.getUpdatedEmails({ pageToken: updatedResponse.nextPageToken });
+    //             allEmails = allEmails.concat(updatedResponse.records);
+    
+    //             if (updatedResponse.nextDeltaToken) {
+    //                 storedDeltaToken = updatedResponse.nextDeltaToken;
+    //             }
+    //         }
+    
+    //         console.log("✅ Final email count:", allEmails.length);
+    
+    //         return {
+    //             emails: allEmails,
+    //             deltaToken: storedDeltaToken
+    //         };
+    
+    //     } catch (error: any) {
+    //         console.error("❌ Error during sync:", error.response?.data || error);
+    //         return null;
+    //     }
+    // }
+    
     
 }
