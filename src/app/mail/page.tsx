@@ -1,8 +1,13 @@
+import Mail from './mail'
 import React from 'react'
 
 const MailDashboard = () => {
   return (
-    <div>MailDashboard</div>
+    <Mail
+      defaultCollapsed={false}
+      defaultLayout={[20, 32, 48]}
+      navCollapsedSize={15}
+    />
   )
 }
 
