@@ -3,8 +3,11 @@
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '~/components/ui/resizable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
 
+import AccountSwitcher from './account-switcher'
 import React from 'react'
 import { Separator } from '@radix-ui/react-context-menu'
+import Sidebar from './sidebar'
+import ThreadList from './thread-list'
 import { TooltipProvider } from '~/components/ui/tooltip'
 import { cn } from '~/lib/utils'
 
@@ -38,11 +41,11 @@ const Mail = ({ defaultLayout = [20, 32, 48], navCollapsedSize, defaultCollapsed
                 <div className='flex flex-col h-full flex-1'>
                     <div className={cn('flex h-[52px] items-center justify-between', isCollapsed ? 'h-[52px]' : 'px-2')}>
                         {/* Account Switcher */}
-                        Account Switcher
+                        <AccountSwitcher isCollapsed={isCollapsed}/>
                     </div>
                     <Separator />
                     {/* Sidebar */}
-                    Sidebar
+                    <Sidebar isCollapsed={false} />
 
                     <div className='flex-1'>
                         {/* AI */}
@@ -74,10 +77,10 @@ const Mail = ({ defaultLayout = [20, 32, 48], navCollapsedSize, defaultCollapsed
                     Search Bar
 
                     <TabsContent value='inbox'>
-                        inbox
+                        <ThreadList />
                     </TabsContent>
                     <TabsContent value='done'>
-                        done
+                        <ThreadList />
                     </TabsContent>
                 </Tabs>
 
