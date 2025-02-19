@@ -7,6 +7,7 @@ import AccountSwitcher from './account-switcher'
 import React from 'react'
 import { Separator } from '@radix-ui/react-context-menu'
 import Sidebar from './sidebar'
+import ThreadDisplay from './thread-display'
 import ThreadList from './thread-list'
 import { TooltipProvider } from '~/components/ui/tooltip'
 import { cn } from '~/lib/utils'
@@ -90,7 +91,8 @@ const Mail = ({ defaultLayout = [20, 32, 48], navCollapsedSize, defaultCollapsed
 
             <ResizablePanel defaultSize={defaultLayout[2]} minSize={30}>
                 <div>
-                    thread display.
+                    {/* thread display. */}
+                    <ThreadDisplay />
                 </div>
             </ResizablePanel>
 
