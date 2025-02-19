@@ -19,6 +19,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 
 import { Button } from "~/components/ui/button";
+import EmailDisplay from "./email-display";
 import React from "react";
 import { Separator } from "~/components/ui/separator";
 import { format } from "date-fns";
@@ -134,18 +135,18 @@ const ThreadDisplay = () => {
             <div className="max-h-[calc(100vh-500px)] overflow-scroll flex flex-col">
               <div className="p-6 flex flex-col gap-4">
                 {thread.emails.map(email => {
-                  return <div key={email.id}>
-                    {email.subject}
-                  </div>
+                  // return <div key={email.id}>
+                  //   {email.subject}
+                  // </div>
+                  return <EmailDisplay key={email.id} email={email}/>
                 })}
               </div>
             </div>
-            <div className="flex-1">
-              
-            </div>
+            <div className="flex-1"></div>
 
             <Separator className="mt-auto"/>
 
+            {/* ReplyBox */}
             ReplyBox
           </div>
         </>
