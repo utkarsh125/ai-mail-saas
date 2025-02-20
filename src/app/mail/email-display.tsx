@@ -44,7 +44,6 @@ const EmailDisplay = ({ email }: Props) => {
             {isMe ? "Me" : email.from.name ?? email.from.address}
           </span>
         </div>
-
         {/* Time Ago Display */}
         <p className="text-xs sm:text-sm text-gray-500">
           {formatDistanceToNow(email.sentAt ?? new Date(), { addSuffix: true })}

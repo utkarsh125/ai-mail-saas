@@ -13,6 +13,7 @@ import {
   UserButton
 } from '@clerk/nextjs'
 import { ThemeProvider } from "~/components/theme-provider";
+import KBar from "~/components/kbar";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -35,7 +36,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-          <TRPCReactProvider>{children}</TRPCReactProvider>
+          <TRPCReactProvider>
+            <KBar>
+            {children}
+            </KBar>
+            </TRPCReactProvider>
           </ThemeProvider>
         </body>
       </html>
