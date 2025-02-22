@@ -21,6 +21,7 @@ import {
 import { Button } from "~/components/ui/button";
 import EmailDisplay from "./email-display";
 import React from "react";
+import ReplyBox from "./reply-box";
 import { Separator } from "~/components/ui/separator";
 import { format } from "date-fns";
 import useThreads from "~/hooks/use-threads";
@@ -147,7 +148,7 @@ const ThreadDisplay = () => {
             <Separator className="mt-auto"/>
 
             {/* ReplyBox */}
-            ReplyBox
+            <ReplyBox />
           </div>
         </>
       ) : (
