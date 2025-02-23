@@ -8,12 +8,12 @@ export const authorizeAccountAccess = async (
   accountId: string,
   userId: string,
 ) => {
-  console.log(
-    "[authorizeAccountAccess] Checking access for accountId:",
-    accountId,
-    "and userId:",
-    userId,
-  );
+  // console.log(
+  //   "[authorizeAccountAccess] Checking access for accountId:",
+  //   accountId,
+  //   "and userId:",
+  //   userId,
+  // );
 
   const account = await db.account.findFirst({
     where: {
@@ -38,8 +38,8 @@ export const authorizeAccountAccess = async (
     throw new Error("Account not found");
   }
 
-  console.log("[authorizeAccountAccess] Account found:", account);
-  console.log("[authorizeAccountAccess] Returning account ID:", account.id);
+  // console.log("[authorizeAccountAccess] Account found:", account);
+  // console.log("[authorizeAccountAccess] Returning account ID:", account.id);
   return account;
 };
 
@@ -62,11 +62,11 @@ export const accountRouter = createTRPCRouter({
       },
     });
 
-    console.log("[accountRouter.getAccounts] Accounts retrieved:", accounts);
-    console.log(
-      "[accountRouter.getAccounts] Number of accounts found:",
-      accounts.length,
-    );
+    // console.log("[accountRouter.getAccounts] Accounts retrieved:", accounts);
+    // console.log(
+    //   "[accountRouter.getAccounts] Number of accounts found:",
+    //   accounts.length,
+    // );
 
     return accounts;
   }),
@@ -79,12 +79,12 @@ export const accountRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      console.log("[accountRouter.getNumThreads] Starting getNumThreads...");
-      console.log("[accountRouter.getNumThreads] Received input:", input);
-      console.log(
-        "[accountRouter.getNumThreads] Authenticated userID:",
-        ctx.auth.userId,
-      );
+      // console.log("[accountRouter.getNumThreads] Starting getNumThreads...");
+      // console.log("[accountRouter.getNumThreads] Received input:", input);
+      // console.log(
+      //   "[accountRouter.getNumThreads] Authenticated userID:",
+      //   ctx.auth.userId,
+      // );
 
       // Authorize access to the account.
       const account = await authorizeAccountAccess(
@@ -92,10 +92,10 @@ export const accountRouter = createTRPCRouter({
         ctx.auth.userId,
       );
 
-      console.log(
-        "[accountRouter.getNumThreads] Building filter for tab:",
-        input.tab,
-      );
+      // console.log(
+      //   "[accountRouter.getNumThreads] Building filter for tab:",
+      //   input.tab,
+      // );
       let filter: Prisma.ThreadWhereInput = {};
 
       if (input.tab === "inbox") {
@@ -134,12 +134,12 @@ export const accountRouter = createTRPCRouter({
         },
       });
 
-      console.log(
-        "[accountRouter.getNumThreads] Thread count for account:",
-        account.id,
-        "is",
-        count,
-      );
+      // console.log(
+      //   "[accountRouter.getNumThreads] Thread count for account:",
+      //   account.id,
+      //   "is",
+      //   count,
+      // );
 
       return count;
     }),

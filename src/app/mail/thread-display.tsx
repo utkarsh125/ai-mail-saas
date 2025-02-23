@@ -29,11 +29,11 @@ import useThreads from "~/hooks/use-threads";
 const ThreadDisplay = () => {
   const { threadId, threads } = useThreads();
 
-  console.log("ThreadId: ", threadId);
-  console.log("threads: ", threads);
+  // console.log("ThreadId: ", threadId);
+  // console.log("threads: ", threads);
 
   const thread = threads?.find((t) => t.id === threadId);
-  console.log("Current Thread: ", thread);
+  // console.log("Current Thread: ", thread);
 
   return (
     <div className="flex h-full flex-col">
