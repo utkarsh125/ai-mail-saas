@@ -23,6 +23,7 @@ export async function generateEmail(context: string, prompt: string) {
             
             START CONTEXT BLOCK
             ${context}
+            
             END OF CONTEXT BLOCK
             
             USER PROMPT:
@@ -38,6 +39,7 @@ export async function generateEmail(context: string, prompt: string) {
             - Don't add fluff like 'Here’s your email' or anything like that.
             - Directly output the email, no need to say 'Here is your email' or anything like that.
             - No need to output subject.
+            - Add step-by-step procedure where applicable
             `;
 
             // Send request to Gemini API
