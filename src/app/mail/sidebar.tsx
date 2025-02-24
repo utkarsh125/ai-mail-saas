@@ -13,31 +13,26 @@ type Props = {
 
 const Sidebar = ({ isCollapsed }: Props) => {
   const [accountId] = useLocalStorage('accountId', '')
-  // console.log("🔍 Stored accountId from localStorage:", accountId);
-
   const [tab] = useLocalStorage('normalhuman-tab', 'inbox')
-  // console.log("🔍 Current tab value:", tab);
 
   const { data: inboxThreads } = api.account.getNumThreads.useQuery({
     accountId,
     tab: 'inbox'
   });
-  // console.log("🔍 inboxThreads data:", inboxThreads);
 
   const { data: draftsThreads } = api.account.getNumThreads.useQuery({
     accountId,
     tab: 'drafts'
   });
-  // console.log("🔍 draftsThreads data:", draftsThreads);
 
   const { data: sentThreads } = api.account.getNumThreads.useQuery({
     accountId,
     tab: 'sent'
   });
-  // console.log("🔍 sentThreads data:", sentThreads);
 
   return (
-    <Nav isCollapsed={isCollapsed}
+    <Nav
+      isCollapsed={isCollapsed}
       links={[
         {
           title: 'Inbox',
@@ -49,7 +44,7 @@ const Sidebar = ({ isCollapsed }: Props) => {
           title: 'Draft',
           label: draftsThreads?.toString() || "0",
           icon: File,
-          variant: tab === 'draft' ? 'default' : 'ghost'
+          variant: tab === 'drafts' ? 'default' : 'ghost'
         },
         {
           title: 'Sent',

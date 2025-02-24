@@ -104,7 +104,7 @@ export const accountRouter = createTRPCRouter({
         filter.inboxStatus = true;
         console.log("[accountRouter.getNumThreads] Filter set for inbox");
       }
-      if (input.tab === "draft") {
+      if (input.tab === "drafts") {
         filter.draftStatus = true;
         console.log("[accountRouter.getNumThreads] Filter set for draft");
       }
@@ -113,7 +113,7 @@ export const accountRouter = createTRPCRouter({
         console.log("[accountRouter.getNumThreads] Filter set for sent");
       }
 
-      console.log("[accountRouter.getNumThreads] Final filter object:", filter);
+      // console.log("[accountRouter.getNumThreads] Final filter object:", filter);
 
       // (Optional) Uncomment to see all threads for this account:
       /*
@@ -159,6 +159,9 @@ export const accountRouter = createTRPCRouter({
         input.accountId,
         ctx.auth.userId,
       );
+
+      const acc = new Account(account.token)
+      acc.syncEmails().catch(console.error)
 
       let filter: Prisma.ThreadWhereInput = {};
 
