@@ -147,8 +147,10 @@ const EmailEditor = ({
 
         <Button
           onClick={async () => {
+            
+            const emailBody = editor?.getHTML() || "";
+            await handleSend(emailBody);
             editor?.commands.clearContent();
-            await handleSend(editor?.getHTML() || "");
           }}
           disabled={isSending}
         >
