@@ -31,6 +31,9 @@ const AIComposeButton = (props: Props) => {
   const [prompt, setPrompt] = useState(""); // holds the user's prompt
   const { threads, threadId, account } = useThreads(); //fetching the mails in HTML through this
 
+  // console.log("Account Name: ", account?.name);
+  // console.log("Account mailAddress: ", account?.emailAddress);
+
   const thread = threads?.find((t) => t.id === threadId);
 
   // This function calls generateEmail and streams tokens from the Gemini API.
@@ -46,6 +49,9 @@ const AIComposeButton = (props: Props) => {
 
     if (thread?.emails && thread.emails.length > 0) {
       for (const email of thread.emails) {
+
+        //checking if the account details are fetched properly
+        
         // Extract and format the sender details properly.
         const fromText =
           typeof email.from === "object"
@@ -55,26 +61,23 @@ const AIComposeButton = (props: Props) => {
         // Build the content with a clear structure.
         const content = `
         Account Details:
-          - Name: ${account?.name}
+          - Name: ${account?.name} 
           - Email: ${account?.emailAddress}
         Email History: 
           - Subject: ${email.subject}
           - From: ${fromText}
-          -Sent: ${new Date(email.sentAt).toLocaleString()}
+          - Sent: ${new Date(email.sentAt).toLocaleString()}
           - Body: ${turndown.turndown(email.body ?? email.bodySnippet ?? "")}
        `;
       context += content;
       
-
-      // Build a clear context string: Account details first, then email details.
-     
           
         }
       }
 
-      console.log("Generating email with prompt:", prompt);
+      // console.log("Generating email with prompt:", prompt);
       const { output } = await generateEmail(context, prompt);
-      console.log("Received output:", output);
+      // console.log("Received output:", output);
      
 
       console.log("Context:", context);

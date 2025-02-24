@@ -10,6 +10,9 @@ import React from "react";
 import { Separator } from "~/components/ui/separator";
 import StarterKit from "@tiptap/starter-kit";
 import TagInput from "./tag-input";
+import Text from "@tiptap/extension-text"
+import { generate } from "./action";
+import { readStreamableValue } from "ai/rsc";
 
 type Props = {
   subject: string;
@@ -36,16 +39,47 @@ const EmailEditor = ({
   setCcValues,
   setToValues,
 }: Props) => {
+  const [value, setValue] = React.useState<string>('')
   const [expanded, setExpanded] = React.useState<boolean>(defaultToolbarExpanded);
+  const [token, setToken] = React.useState<string>('')
+
+  const aiGenerate = async(value: string) => {
+    const context = editor?.getHTML() || '';
+    console.log(context);
+    const {output} = await generate(value)
+    for await (const token of readStreamableValue(output)){{
+      if(token){
+        setToken(token)
+      }
+    }}
+  }
+
+  
+  const CustomText = Text.extend({
+    addKeyboardShortcuts(){
+      return {
+        'Mod-j': () =>{
+          // console.log('Mod-y')
+          aiGenerate(this.editor.getText())
+          return true
+        }
+      }
+    }
+  })
 
   // Initialize the tiptap editor
   const editor = useEditor({
     autofocus: true,
-    extensions: [StarterKit],
+    extensions: [StarterKit, CustomText],
     onUpdate: ({ editor }) => {
-      // Optionally update state with current HTML content
+      setValue(editor.getHTML())
+
     },
   });
+
+  React.useEffect(() => {
+    editor?.commands?.insertContent(token)
+  }, [editor, token])
 
   // This function receives each token from the AI stream.
   // It logs the token and then inserts it into the editor at the current cursor position.
@@ -98,7 +132,7 @@ const EmailEditor = ({
       </div>
 
       <div className="prose w-full px-4">
-        <EditorContent editor={editor} />
+        <EditorContent editor={editor} value={value}/>
       </div>
 
       <Separator />

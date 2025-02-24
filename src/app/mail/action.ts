@@ -3,7 +3,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createStreamableValue } from "ai/rsc";
 
-// Initialize Gemini with your API key (ensure it’s in your .env file)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
 export async function generateEmail(context: string, prompt: string) {
@@ -11,6 +10,7 @@ export async function generateEmail(context: string, prompt: string) {
 
     // Create a streamable response for frontend
     const stream = createStreamableValue();
+
 
     (async () => {
         try {
@@ -36,10 +36,64 @@ export async function generateEmail(context: string, prompt: string) {
             - Avoid apologizing for previous responses. Instead, indicate that you have updated your knowledge based on new information.
             - Do not invent or speculate about anything that is not directly supported by the email context.
             - Keep your response focused and relevant to the user's prompt.
-            - Don't add fluff like 'Here’s your email' or anything like that.
+            - Don't add fluff like 'Here's your email' or anything like that.
             - Directly output the email, no need to say 'Here is your email' or anything like that.
             - No need to output subject.
             - Add step-by-step procedure where applicable
+            - Include self mail when constructing a reply 
+            `;
+
+            // Send request to Gemini API
+            const result = await model.generateContentStream(fullPrompt);
+
+            for await (const chunk of result.stream) {
+                if (chunk.text()) {
+                    console.log("Token generated:", chunk.text());
+                    stream.update(chunk.text());
+                }
+            }
+
+            stream.done();
+        } catch (error) {
+            console.error("Error in Gemini AI generation:", error);
+            stream.done();
+        }
+    })();
+
+    return { output: stream.value };
+}
+
+
+export async function generate(input: string) {
+
+    console.log("Input (generate): ", input);
+
+    // Create a streamable response for frontend
+    const stream = createStreamableValue('');
+
+
+    (async () => {
+        try {
+            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+            const fullPrompt = `
+             ALWAYS RESPOND IN PLAIN TEXT, no html or markdown.
+            You are a helpful AI embedded in a email client app that is used to autocomplete sentences, similar to google gmail autocomplete
+            The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.
+            AI is a well-behaved and well-mannered individual.
+            AI is always friendly, kind, and inspiring, and he is eager to provide vivid and thoughtful responses to the user.
+            I am writing a piece of text in a notion text editor app.
+            Help me complete my train of thought here: <input>${input}</input>
+            keep the tone of the text consistent with the rest of the text.
+            keep the response short and sweet. Act like a copilot, finish my sentence if need be, but don't try to generate a whole new paragraph.
+            Do not add fluff like "I'm here to help you" or "I'm a helpful AI" or anything like that.
+
+            Example:
+            Dear Alice, I'm sorry to hear that you are feeling down.
+
+            Output: Unfortunately, I can't help you with that.
+
+            Your output is directly concatenated to the input, so do not add any new lines or formatting, just plain text.
             `;
 
             // Send request to Gemini API
