@@ -1,22 +1,39 @@
 import { EmailAddress, EmailAttachment, EmailMessage } from "./types";
 
+import { OramaClient } from "./orama";
 import { db } from "~/server/db";
 
 export async function syncEmailsToDatabase(
   emails: EmailMessage[],
   accountId: string,
 ) {
-  console.log("Attempting to sync emails to database. Count:", emails.length);
+  // console.log("Attempting to sync emails to database. Count:", emails.length);
+
+  //ORAMA DOC SEARCH FUNCTIONALITY
+  const orama = new OramaClient(accountId)
+  await orama.initialize()
 
   if (!emails.length) {
-    console.log("No emails to sync.");
+    // console.log("No emails to sync.");
     return;
   }
 
   try {
-    await Promise.all(
-      emails.map((email, index) => upsertEmail(email, accountId, index)),
-    );
+    // await Promise.all(
+    //   emails.map((email, index) => upsertEmail(email, accountId, index)),
+    // );
+
+    for(const email of emails){
+      await orama.insert({
+        subject: email.subject,
+        body: email.body ?? '',
+        from: email.from.address,
+        to: email.to.map(to => to.address),
+        sentAt: new Date(email.sentAt).toLocaleDateString(),
+        threadId: email.threadId
+      })
+      await upsertEmail(email, accountId, 0)
+    }
 
     // Verify stored emails
     const storedEmails = await db.email.findMany({});

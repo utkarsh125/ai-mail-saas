@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
 
 import AccountSwitcher from './account-switcher'
 import React from 'react'
+import SearchBar from './search-bar'
 import { Separator } from '@radix-ui/react-context-menu'
 import Sidebar from './sidebar'
 import ThreadDisplay from './thread-display'
@@ -75,7 +76,7 @@ const Mail = ({ defaultLayout = [20, 32, 48], navCollapsedSize, defaultCollapsed
                     <Separator />
 
                     {/* Search Bar */}
-                    Search Bar
+                    <SearchBar />
 
                     <TabsContent value='inbox'>
                         <ThreadList />

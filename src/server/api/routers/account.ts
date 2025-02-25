@@ -102,15 +102,15 @@ export const accountRouter = createTRPCRouter({
 
       if (input.tab === "inbox") {
         filter.inboxStatus = true;
-        console.log("[accountRouter.getNumThreads] Filter set for inbox");
+        // console.log("[accountRouter.getNumThreads] Filter set for inbox");
       }
       if (input.tab === "drafts") {
         filter.draftStatus = true;
-        console.log("[accountRouter.getNumThreads] Filter set for draft");
+        // console.log("[accountRouter.getNumThreads] Filter set for draft");
       }
       if (input.tab === "sent") {
         filter.sentStatus = true;
-        console.log("[accountRouter.getNumThreads] Filter set for sent");
+        // console.log("[accountRouter.getNumThreads] Filter set for sent");
       }
 
       // console.log("[accountRouter.getNumThreads] Final filter object:", filter);

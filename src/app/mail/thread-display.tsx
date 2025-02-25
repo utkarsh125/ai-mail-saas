@@ -22,8 +22,11 @@ import { Button } from "~/components/ui/button";
 import EmailDisplay from "./email-display";
 import React from "react";
 import ReplyBox from "./reply-box";
+import SearchDisplay from "./search-display";
 import { Separator } from "~/components/ui/separator";
 import { format } from "date-fns";
+import { isSearchingAtom } from "./search-bar";
+import { useAtom } from "jotai";
 import useThreads from "~/hooks/use-threads";
 
 const ThreadDisplay = () => {
@@ -34,6 +37,10 @@ const ThreadDisplay = () => {
 
   const thread = threads?.find((t) => t.id === threadId);
   // console.log("Current Thread: ", thread);
+
+
+  const [isSearching] = useAtom(isSearchingAtom);
+
 
   return (
     <div className="flex h-full flex-col">
@@ -90,9 +97,9 @@ const ThreadDisplay = () => {
 
       <Separator />
 
-      {/* thread Section */}
-
-      {thread ? (
+      {isSearching ? <SearchDisplay /> : (
+        <>
+          {thread ? (
         <>
           <div className="flex flex-1 flex-col overflow-scroll">
             <div className="flex items-center p-4">
@@ -156,6 +163,8 @@ const ThreadDisplay = () => {
           <div className="p-8 text-center text-muted-foreground">
             No message selected
           </div>
+        </>
+      )}
         </>
       )}
     </div>
