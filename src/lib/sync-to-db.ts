@@ -28,6 +28,7 @@ export async function syncEmailsToDatabase(
         subject: email.subject,
         body: email.body ?? '',
         from: email.from.address,
+        rawBody: email.body,
         to: email.to.map(to => to.address),
         sentAt: new Date(email.sentAt).toLocaleDateString(),
         threadId: email.threadId
