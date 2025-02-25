@@ -2,6 +2,7 @@ import { EmailAddress, EmailAttachment, EmailMessage } from "./types";
 
 import { OramaClient } from "./orama";
 import { db } from "~/server/db";
+import { getEmbeddings } from "./embedding";
 import { turndown } from "./turndown";
 
 export async function syncEmailsToDatabase(
@@ -27,6 +28,8 @@ export async function syncEmailsToDatabase(
     for(const email of emails){
       const body = turndown.turndown(email.body ?? email.bodySnippet ?? "")
 
+      const embeddings = await getEmbeddings(body)
+
       await orama.insert({
         subject: email.subject,
         body: email.body ?? '',
@@ -34,7 +37,8 @@ export async function syncEmailsToDatabase(
         rawBody: email.bodySnippet ?? "",
         to: email.to.map(to => to.address),
         sentAt: new Date(email.sentAt).toLocaleDateString(),
-        threadId: email.threadId
+        threadId: email.threadId,
+        embeddings
       })
       await upsertEmail(email, accountId, 0)
     }

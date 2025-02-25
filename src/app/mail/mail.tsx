@@ -4,6 +4,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '~/componen
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
 
 import AccountSwitcher from './account-switcher'
+import AskAI from './ask-ai'
 import React from 'react'
 import SearchBar from './search-bar'
 import { Separator } from '@radix-ui/react-context-menu'
@@ -51,7 +52,7 @@ const Mail = ({ defaultLayout = [20, 32, 48], navCollapsedSize, defaultCollapsed
 
                     <div className='flex-1'>
                         {/* AI */}
-                        Ask AI
+                        <AskAI />
                     </div>
                 </div>
             </ResizablePanel>
