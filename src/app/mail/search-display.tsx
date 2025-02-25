@@ -35,12 +35,13 @@ const SearchDisplay = () => {
         </>
       ) : (
         <>
+          <ul className="flex flex-col gap-2">
           {search.data?.hits.map((hit) => (
             <li
               key={hit.id}
-              className="cursor-pointer rounded-md border p-4 transition-all hover:bg-gray-100 dark:hover:bg-gray-200"
+              className="cursor-pointer list-none rounded-md border p-4 transition-all hover:bg-gray-100 dark:hover:bg-gray-200"
             >
-              <h3 className="text-base font-medium">{hit.document.title}</h3>
+              <h3 className="text-base font-medium">{hit.document.subject}</h3>
               <p className="text-sm text-gray-500">From: {hit.document.from}</p>
               <p className="text-sm text-gray-500">
                 To: {hit.document.to.join(", ")}
@@ -55,6 +56,7 @@ const SearchDisplay = () => {
               ></p>
             </li>
           ))}
+          </ul>
         </>
       )}
     </div>
