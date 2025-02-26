@@ -1,46 +1,46 @@
 import axios from "axios";
 
 /**
-
  * @param text - The input text to embed.
- * @returns A Promise resolving to an array of numbers (the embedding vector). 
+ * @returns A Promise resolving to an array of numbers (the embedding vector).
  */
 export async function getEmbeddings(text: string): Promise<number[]> {
-  const HF_MODEL = "sentence-transformers/all-roberta-large-v1"; // Change this model name if needed.
-  const HF_API_TOKEN = process.env.HF_API_TOKEN;
+  const COHERE_MODEL = "embed-english-v2.0"; // Cohere's embedding model ID.
+  const COHERE_API_KEY = process.env.COHERE_API_KEY;
 
-  if (!HF_API_TOKEN) {
-    throw new Error("Hugging Face API token not provided. Set HF_API_TOKEN in your environment.");
+  if (!COHERE_API_KEY) {
+    throw new Error("Cohere API token not provided. Set COHERE_API_KEY in your environment.");
   }
 
   try {
     const response = await axios.post(
-      `https://api-inference.huggingface.co/pipeline/feature-extraction/${HF_MODEL}`,
+      "https://api.cohere.ai/embed",
       {
-        inputs: text.replace(/\n/g, " ")//replacing all the new line text with spaces
+        texts: [text.replace(/\n/g, " ")], // Replace newline characters with spaces.
+        model: COHERE_MODEL,
       },
       {
         headers: {
-          "Authorization": `Bearer ${HF_API_TOKEN}`,
+          "Authorization": `Bearer ${COHERE_API_KEY}`,
           "Content-Type": "application/json"
         }
       }
     );
 
-    // The response is typically a 2D array (an array per sentence).
-    // For a single text input, return the first embedding.
-    return response.data;
+    // Cohere returns an object with an "embeddings" array (one per input text).
+    return response.data.embeddings[0];
   } catch (error: any) {
-    if (error.response) {
-      const errorText = JSON.stringify(error.response.data);
-      throw new Error(
-        `Hugging Face API error: ${error.response.status} ${error.response.statusText} - ${errorText}`
-      );
-    } else {
-      console.error("Error calling Hugging Face embeddings API:", error);
-      throw error;
-    }
+    const errorText = error.response ? JSON.stringify(error.response.data) : error.message;
+    throw new Error(`Cohere embeddings API error: ${errorText}`);
   }
 }
 
-console.log((await getEmbeddings('Hello World!')).length)
+// // Example usage:
+// (async () => {
+//   try {
+//     const embedding = await getEmbeddings("Hello World!");
+//     console.log("Embedding length:", embedding.length);
+//   } catch (err) {
+//     console.error(err);
+//   }
+// })();

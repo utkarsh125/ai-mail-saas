@@ -7,45 +7,45 @@ import { getEmbeddings } from './lib/embedding'
 
 const orama = new OramaClient('98252')//pass in the userId
 
-// await orama.initialize()
+await orama.initialize()
 
-// const emails = await db.email.findMany({
-//     select:{
-//         subject:true,
-//         body:true,
-//         from:true,
-//         to:true,
-//         sentAt:true,
-//         threadId:true,
-//         bodySnippet: true,
-//     }
-// })
+const emails = await db.email.findMany({
+    select:{
+        subject:true,
+        body:true,
+        from:true,
+        to:true,
+        sentAt:true,
+        threadId:true,
+        bodySnippet: true,
+    }
+})
 
-// for(const email of emails){
+for(const email of emails){
 
-//     // console.log("Email subject: ", email.subject);
+    // console.log("Email subject: ", email.subject);
 
-//     //convert the body into markdown format
-//     const body = turndown.turndown(email.body ?? email.bodySnippet ?? "")
-//     const embeddings = await getEmbeddings(body);
+    //convert the body into markdown format
+    const body = turndown.turndown(email.body ?? email.bodySnippet ?? "")
+    const embeddings = await getEmbeddings(body);
 
-//     console.log(embeddings.length)
-//     await orama.insert({
-//         subject: email.subject,
-//         body: email.body ?? '',
-//         rawBody: email.bodySnippet,
-//         from: email.from.address,
-//         to: email.to.map(to => to.address),
-//         sentAt: email.sentAt.toLocaleDateString(),
-//         threadId: email.threadId,
-//         embeddings
-//     })
-// }
+    console.log(embeddings.length)
+    await orama.insert({
+        subject: email.subject,
+        body: email.body ?? '',
+        rawBody: email.bodySnippet,
+        from: email.from.address,
+        to: email.to.map(to => to.address),
+        sentAt: email.sentAt.toLocaleDateString(),
+        threadId: email.threadId,
+        embeddings
+    })
+}
 
 
 
 const searchResults = await orama.vectorSearch({
-    term: 'google',
+    term: 'microsoft',
 })
 // console.log(searchResults.hits)
 for(const hit of searchResults.hits){

@@ -52,7 +52,7 @@ export class OramaClient{
                     to: 'string[]',
                     sentAt: 'string',
                     threadId: 'string',
-                    embeddings: 'vector[1024]' //according to HuggingFace model: sentence-transformers/all-roberta-large-v1
+                    embeddings: 'vector[4096]' //according to HuggingFace model: sentence-transformers/all-roberta-large-v1
                 }
             })
             await this.saveIndex()

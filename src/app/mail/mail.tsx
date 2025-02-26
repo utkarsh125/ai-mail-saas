@@ -52,7 +52,7 @@ const Mail = ({ defaultLayout = [20, 32, 48], navCollapsedSize, defaultCollapsed
 
                     <div className='flex-1'>
                         {/* AI */}
-                        <AskAI />
+                        <AskAI isCollapsed={isCollapsed}/>
                     </div>
                 </div>
             </ResizablePanel>
