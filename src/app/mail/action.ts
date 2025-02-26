@@ -14,7 +14,7 @@ export async function generateEmail(context: string, prompt: string) {
 
     (async () => {
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
             const fullPrompt = `
             You are an AI email assistant embedded in an email client app. Your purpose is to help the user compose emails by providing suggestions and relevant information based on the context of their previous emails.
@@ -36,11 +36,12 @@ export async function generateEmail(context: string, prompt: string) {
             - Avoid apologizing for previous responses. Instead, indicate that you have updated your knowledge based on new information.
             - Do not invent or speculate about anything that is not directly supported by the email context.
             - Keep your response focused and relevant to the user's prompt.
-            - Don't add fluff like 'Here's your email' or anything like that.
+            - Don't add gimmicks like 'Here's your email' or anything like that.
             - Directly output the email, no need to say 'Here is your email' or anything like that.
             - No need to output subject.
             - Add step-by-step procedure where applicable
             - Include self mail when constructing a reply 
+            - Do not include sender's email and do not make it redundant
             `;
 
             // Send request to Gemini API
@@ -74,7 +75,7 @@ export async function generate(input: string) {
 
     (async () => {
         try {
-            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
             const fullPrompt = `
              ALWAYS RESPOND IN PLAIN TEXT, no html or markdown.

@@ -99,6 +99,7 @@ When responding, please follow these guidelines:
       cohereData.text ||
       "";
       
+    //Fallback: If the chatbot is not having enough context
     if (!outputText.trim()) {
       outputText = "I'm sorry, I don't have enough information based on the provided context.";
     }

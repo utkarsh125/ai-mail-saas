@@ -77,104 +77,89 @@ const AskAI: React.FC<AskAIProps> = ({ isCollapsed }) => {
 
   return (
     <div className="mb-4 p-4 w-full">
-      <motion.div className="flex flex-1 flex-col p-4 items-end rounded-lg bg-gray-100 pb-4 shadow-inner dark:bg-gray-100">
+      <motion.div className="flex flex-1 flex-col p-6 items-center rounded-lg bg-gray-100 shadow-lg dark:bg-gray-100">
         <div
           id="message-container"
-          className="flex max-h-[50vh] w-full flex-col gap-2 overflow-y-scroll"
+          className="flex flex-col gap-3 w-full max-h-[50vh] overflow-y-auto pb-4"
         >
           <AnimatePresence mode="wait">
             {messages.map((message) => (
               <motion.div
                 key={message.id}
                 layout
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
                 className={cn(
-                  "z-10 mt-2 max-w-[250px] break-words rounded-2xl p-2",
+                  "max-w-[75%] p-3 rounded-xl break-words",
                   message.role === "user"
-                    ? "self-end text-gray-800 dark:text-gray-100 bg-gray-200"
+                    ? "self-end bg-gray-200 text-gray-800"
                     : "self-start bg-blue-500 text-white"
                 )}
-                transition={{ type: "easeOut", duration: 0.2 }}
               >
-                <div className="text-[15px] leading-[15px]">
-                  {message.content}
-                </div>
+                <div className="text-sm">{message.content}</div>
               </motion.div>
             ))}
           </AnimatePresence>
           {isLoading && (
-            <div className="self-start bg-blue-500 text-white rounded-2xl p-2">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="self-start bg-blue-500 text-white rounded-xl p-3 text-sm"
+            >
               Loading...
-            </div>
+            </motion.div>
           )}
         </div>
 
-        {messages.length > 0 && <div className="h-4" />}
-
-        <div className="w-full">
-          {messages.length === 0 && (
-            <div className="mb-4">
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-4">
-                  <SparklesIcon className="w-6 h-6 text-gray-600" />
-                  <div>
-                    <p className="text-gray-900 dark:text-gray-100">
-                      Ask AI about anything regarding your emails
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Get answers to your questions about your emails
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span
-                    onClick={() => handlePresetClick("What can I ask?")}
-                    className="cursor-pointer rounded-md bg-gray-800 px-2 py-1 text-xs text-gray-200"
-                  >
-                    What can I ask?
-                  </span>
-                  <span
-                    onClick={() => handlePresetClick("When is my next flight?")}
-                    className="cursor-pointer rounded-md bg-gray-800 px-2 py-1 text-xs text-gray-200"
-                  >
-                    When is my next flight?
-                  </span>
-                  <span
-                    onClick={() =>
-                      handlePresetClick("When is my next meeting?")
-                    }
-                    className="cursor-pointer rounded-md bg-gray-800 px-2 py-1 text-xs text-gray-200"
-                  >
-                    When is my next meeting?
-                  </span>
-                </div>
+        {messages.length === 0 && (
+          <div className="mb-6 w-full">
+            <div className="flex flex-col items-center gap-2 text-center">
+              <SparklesIcon className="w-8 h-8 text-gray-600" />
+              <p className="text-gray-900 dark:text-gray-100 font-medium">
+                Ask AI about anything regarding your emails
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Get answers to your questions about your emails
+              </p>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span
+                  onClick={() => handlePresetClick("What can I ask?")}
+                  className="cursor-pointer rounded-md bg-gray-800 px-2 py-1 text-xs text-gray-200"
+                >
+                  What can I ask?
+                </span>
+                <span
+                  onClick={() => handlePresetClick("When is my next flight?")}
+                  className="cursor-pointer rounded-md bg-gray-800 px-2 py-1 text-xs text-gray-200"
+                >
+                  When is my next flight?
+                </span>
+                <span
+                  onClick={() => handlePresetClick("When is my next meeting?")}
+                  className="cursor-pointer rounded-md bg-gray-800 px-2 py-1 text-xs text-gray-200"
+                >
+                  When is my next meeting?
+                </span>
               </div>
             </div>
-          )}
-          <form className="flex w-full items-center" onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Ask AI anything about your emails"
-              value={input}
-              onChange={handleInputChange}
-              className="relative h-9 flex-grow rounded-full border border-gray-200 bg-white px-3 py-1 text-[15px] outline-none placeholder:text-[13px]"
-            />
-            {input && (
-              <motion.div
-                key={messages.length}
-                className="ml-2 flex flex-grow items-center overflow-hidden rounded-md bg-gray-800 px-3 py-2 text-[15px] text-gray-200"
-                transition={{ type: "easeOut", duration: 0.2 }}
-              >
-                {input}
-              </motion.div>
-            )}
-            <button
-              type="submit"
-              className="ml-2 flex h-9 w-9 items-center justify-center rounded-full bg-gray-200"
-            >
-              <Send className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            </button>
-          </form>
-        </div>
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="flex w-full items-center">
+          <input
+            type="text"
+            placeholder="Ask AI anything about your emails"
+            value={input}
+            onChange={handleInputChange}
+            className="flex-grow h-10 rounded-full border border-gray-300 bg-white px-4 py-2 text-sm outline-none placeholder-gray-400 shadow-sm transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+          />
+          <button
+            type="submit"
+            className="ml-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
+          >
+            <Send className="w-5 h-5 text-gray-600" />
+          </button>
+        </form>
       </motion.div>
     </div>
   );
