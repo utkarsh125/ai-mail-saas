@@ -19,7 +19,7 @@ This project is built using the **T3 Stack**, enhanced with additional tools for
 
 ---
 ## Project's working and why I couldn't deploy it
-[![Watch the Video](https://img.youtube.com/vi/OF3Gb9ic18s/0.jpg)](https://www.youtube.com/watch?v=OF3Gb9ic18s)
+📺 **Watch the video:** [YouTube Link](https://www.youtube.com/watch?v=OF3Gb9ic18s)
 
 --- 
 ## Architectural Flow
