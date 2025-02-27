@@ -23,8 +23,11 @@ This project is built using the **T3 Stack**, enhanced with additional tools for
 Before starting development, the following must be explored:
 
 - [x] **Clerk Authentication** *(Completed)*
-- [ ] **Orama Documentation** *(Pending)*
 - [x] **Aurinko** *(Completed)*
+- [x] **Orama Search** *(Completed)*
+- [x] **Gemini AI Text Generation** *(Completed)*
+- [x] **RAG Chat** *(Completed)*
+- [ ] **Stripe payment** *(Pending)*
 
 ---
 
