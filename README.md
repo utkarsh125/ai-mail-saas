@@ -18,7 +18,10 @@ This project is built using the **T3 Stack**, enhanced with additional tools for
   - ![Orama](https://img.shields.io/badge/Orama-Search-red) **Orama** for full-text search
 
 ---
+## Project's working and why I couldn't deploy it
+[![Watch the Video](https://img.youtube.com/vi/OF3Gb9ic18s/0.jpg)](https://www.youtube.com/watch?v=OF3Gb9ic18s)
 
+--- 
 ## Architectural Flow
 ![Pasted image 20250210233524](https://github.com/user-attachments/assets/5b08504c-55d8-431b-812e-8c792e43bc83)
 
