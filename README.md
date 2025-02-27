@@ -19,6 +19,53 @@ This project is built using the **T3 Stack**, enhanced with additional tools for
 
 ---
 
+## Project Structure
+```
+.
+├── bun.lock
+├── components.json
+├── next.config.js
+├── next-env.d.ts
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+├── prettier.config.js
+├── prisma
+│   ├── migrations/
+│   ├── migration_lock.toml
+│   └── schema.prisma
+├── public
+│   └── favicon.ico
+├── README.md
+├── src
+│   ├── app
+│   │   ├── api/
+│   │   ├── _components/
+│   │   ├── mail/
+│   │   ├── sign-in/
+│   │   ├── sign-up/
+│   │   └── layout.tsx
+│   ├── components
+│   │   ├── kbar/
+│   │   ├── ui/
+│   │   ├── link-account-button.tsx
+│   │   ├── theme-provider.tsx
+│   │   └── theme-toggle.tsx
+│   ├── hooks/
+│   ├── lib/
+│   ├── server/
+│   ├── styles/
+│   ├── trpc/
+│   ├── env.js
+│   ├── middleware.ts
+│   ├── playground.ts
+│   └── page.tsx
+├── start-database.sh
+├── tailwind.config.ts
+└── tsconfig.json
+
+```
+
 ## Step Zero: Preliminary Research
 Before starting development, the following must be explored:
 
