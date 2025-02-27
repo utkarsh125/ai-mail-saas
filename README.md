@@ -19,6 +19,11 @@ This project is built using the **T3 Stack**, enhanced with additional tools for
 
 ---
 
+## Architectural Flow
+![Pasted image 20250210233524](https://github.com/user-attachments/assets/5b08504c-55d8-431b-812e-8c792e43bc83)
+
+---
+
 ## Project Structure
 ```
 .
