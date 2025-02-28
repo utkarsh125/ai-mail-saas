@@ -1,4 +1,6 @@
-# Project Setup and Architecture
+![screely-1740699239185](https://github.com/user-attachments/assets/37b6a613-4777-4293-acab-81116265bd49)
+
+# automail.
 
 ## Technology Stack
 
