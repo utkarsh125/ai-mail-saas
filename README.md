@@ -28,7 +28,7 @@ The project uses multiple APIs, here is a list of APIs that are employed in this
 - **Gemini API** use to interact with `gemini-2.0-flash` which is used for Text Generation _generous limit_
 
 ## Challenges that I faced during the creation of this project
-- **AURINKO DOES NOT SUPPORT** **`Gmail` ****STRAIGHT OUT OF THE BOX** and a lot of configuration were required from `Google Cloud Platform`
+- **AURINKO DOES NOT SUPPORT** `Gmail` **STRAIGHT OUT OF THE BOX** and a lot of configuration were required from `Google Cloud Platform`
 - **Gemini + VertexAI** complex setup did not allow me to generate embeddings for Orama
 - **HUGGINGFACE** had a not-so-generous pricing for their `Inference API` it stops at the consumption of just **$0.10**
 - **Stripe Integration** since it does not work that well in India because of KYC issues, setting it up was difficult even for mock payments
