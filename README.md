@@ -22,7 +22,16 @@ This project is built using the **T3 Stack**, enhanced with additional tools for
 ---
 ## Project's working and why I couldn't deploy it
 📺 **Watch the video:** [YouTube Link](https://www.youtube.com/watch?v=OF3Gb9ic18s)
+The project uses multiple APIs, here is a list of APIs that are employed in this project
+- **Aurinko** for mail sync _offers 15 day free trial_
+- **Cohere API** used for the **RAG Chat** _generous monthly limit_
+- **Gemini API** use to interact with `gemini-2.0-flash` which is used for Text Generation _generous limit_
 
+## Challenges that I faced during the creation of this project
+- **AURINKO DOES NOT SUPPORT** **`Gmail` ****STRAIGHT OUT OF THE BOX** and a lot of configuration were required from `Google Cloud Platform`
+- **Gemini + VertexAI** complex setup did not allow me to generate embeddings for Orama
+- **HUGGINGFACE** had a not-so-generous pricing for their `Inference API` it stops at the consumption of just **$0.10**
+- **Stripe Integration** since it does not work that well in India because of KYC issues, setting it up was difficult even for mock payments
 --- 
 ## Architectural Flow
 ![Pasted image 20250210233524](https://github.com/user-attachments/assets/5b08504c-55d8-431b-812e-8c792e43bc83)
